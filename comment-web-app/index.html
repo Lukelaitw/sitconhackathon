@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .vote-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .vote-button:hover {
+            background-color: #45a049;
+        }
+        .back-button {
+            background-color: #f44336;
+        }
+        .back-button:hover {
+            background-color: #e53935;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Leave a Comment</h1>
+        <form id="commentForm">
+            <input type="text" id="comment" name="comment" required>
+            <button type="submit" class="vote-button">Submit</button>
+        </form>
+        <h2>Comments:</h2>
+        <ul id="commentsList"></ul>
+        
+        <div id="back"></div>
+        <a href="http://localhost:3000">
+            <button class="back-button"> back</button>
+        </a>
+    </div>
+    </div>
+
+    <script>
+        document.getElementById('commentForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const comment = document.getElementById('comment').value;
+            
+            const response = await fetch('/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ comment })
+            });
+            
+            if (response.ok) {
+                loadComments();
+                document.getElementById('comment').value = '';
+            }
+        });
+
+        async function loadComments() {
+            const response = await fetch('/comments');
+            const comments = await response.json();
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '';
+            comments.forEach(comment => {
+                const li = document.createElement('li');
+                li.textContent = comment;
+                commentsList.appendChild(li);
+            });
+        }
+
+        // Load comments when the page loads
+        loadComments();
+    </script>
+</body>
+</html>
